@@ -38,3 +38,6 @@ S..........#
 In this level file, dots '.' represent empty tiles that can be walked on. 
 'S' stands for Start and 'G' for Goal (exit). '#' are immovable obstacles and 'O' are movable moxes.
 The first two integers specify the number of rows and columns of the level, respectively.
+
+The GameState class has a history attribute that contains a copy of each game state from start to solution.
+This way you can see the entire step of a solution.
