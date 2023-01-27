@@ -41,7 +41,6 @@ class GameState:
 
             # Some error checking
             assert self.rows == last_row_index - 1, "Number of rows must be at least one"
-            assert all(len(line) == self.cols for line in grid_lines), "Empty line"
             assert all(len(line) == self.cols for line in grid_lines), "All rows must have equal length"
             
             # Build starting game grid state
@@ -108,15 +107,16 @@ class GameState:
             total += row.count(TileType.BANANA)
         return total
 
-    def __get_movable_neighbor(self, r, c):
+    def __get_movable_neighbors(self, r, c):
+        neighbors = []
         deltas = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         for dr, dc in deltas:
             box_r, box_c = r + dr, c + dc
             if not self.__is_valid_pos(box_r, box_c):
                 continue
             if self.grid[box_r][box_c] in [TileType.BOX, TileType.BANANA]:
-                return box_r, box_c
-        return None
+                neighbors.append((box_r, box_c))
+        return neighbors
 
     def get_copy(self):
         copied = GameState(grid=self.grid)
@@ -147,7 +147,7 @@ class GameState:
             if self.__get_tile(to_tile) == TileType.GOAL:
                 return False
         
-        if self.__get_tile(to_tile) not in [TileType.EMPTY, TileType.GOAL, TileType.START]:
+        if self.__get_tile(to_tile) not in [TileType.EMPTY, TileType.GOAL]:
             return False
         
         return True
@@ -175,33 +175,30 @@ class GameState:
         reachable_tiles = self.__get_reachable_tiles()
         tiles_next_to_boxes = []
         for r, c in reachable_tiles:
-            box_tile = self.__get_movable_neighbor(r, c)
-            if box_tile is None:
-                continue
+            box_tiles = self.__get_movable_neighbors(r, c)
+            for box_tile in box_tiles:
+                box_r, box_c = box_tile
+                dr, dc = box_r - r, box_c - c
+                
+                # Alternative 1: push box
+                box_next_tile = box_r + dr, box_c + dc
+                if self.__can_move_box(box_tile, box_next_tile):
+                    possible_state = self.get_copy()
+                    possible_state.__move_box(box_tile, box_next_tile)
+                    possible.append(possible_state)
 
-            box_r, box_c = box_tile
-            dr, dc = box_r - r, box_c - c
-
-            # Alternative 1: push box
-            box_next_tile = box_r + dr, box_c + dc
-            if self.__can_move_box(box_tile, box_next_tile):
+                # Alternative 2: pull box
+                box_next_tile = r, c
+                stand_next_tile = r - dr, c - dc
+                if not self.__is_valid_pos(r - dr, c - dc):
+                    continue
+                if not self.__is_walkable_pos(r - dr, c - dc):
+                    continue
+                if not self.__can_move_box(box_tile, box_next_tile):
+                    continue
                 possible_state = self.get_copy()
                 possible_state.__move_box(box_tile, box_next_tile)
                 possible.append(possible_state)
-
-            # Alternative 2: pull box
-            box_next_tile = r, c
-            stand_next_tile = r - dr, c - dc
-            if not self.__is_valid_pos(r - dr, c - dc):
-                continue
-            if not self.__is_walkable_pos(r - dr, c - dc):
-                continue
-            if not self.__can_move_box(box_tile, box_next_tile):
-                continue
-            possible_state = self.get_copy()
-            possible_state.__move_box(box_tile, box_next_tile)
-            possible.append(possible_state)
-        
         return possible
 
     def __count_total_banana_dist(self):

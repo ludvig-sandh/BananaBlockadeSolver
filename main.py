@@ -8,4 +8,3 @@ if __name__ == "__main__":
     state = GameState(map_file_path)
     solver = Solver(state)
     solver.start()
-    

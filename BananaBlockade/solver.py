@@ -45,8 +45,8 @@ class Solver:
                     print("New best score:", best_score)
                 heappush(priority_queue, PQItem(distance + 1, estimate, neighbor_state))
 
-        print(finish_state)
         print("History:")
         for state in finish_state.history:
             print(state, end="\n\n")
+        print(finish_state)
         print("Number of moves needed for solution:", finish_distance)
