@@ -18,7 +18,7 @@ class Solver:
     def __init__(self, starting_state: GameState):
         self.starting_state = starting_state
 
-    def start(self):
+    def solve(self):
         # A* search algorithm
         priority_queue = [PQItem(0, 0, self.starting_state)]
         finish_state, finish_distance = None, None
@@ -33,9 +33,7 @@ class Solver:
             visited.add(state)
 
             if state.is_won():
-                finish_state = state
-                finish_distance = distance
-                break
+                return state, distance
 
             neighboring_states = state.get_possible_moves()
             for neighbor_state in neighboring_states:
@@ -44,9 +42,3 @@ class Solver:
                     best_score = distance + 1 + estimate
                     print("New best score:", best_score)
                 heappush(priority_queue, PQItem(distance + 1, estimate, neighbor_state))
-
-        print("History:")
-        for state in finish_state.history:
-            print(state, end="\n\n")
-        print(finish_state)
-        print("Number of moves needed for solution:", finish_distance)
