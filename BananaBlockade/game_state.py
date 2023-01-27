@@ -17,7 +17,7 @@ class GameState:
         with open(from_file_path, 'r') as f:
             lines = f.read().split("\n")
             self.rows, self.cols = [int(i) for i in lines[0].split()]
-            assert (self.rows > 0, self.cols > 0), "Number of rows and columns must be larger than zero"
+            assert self.rows > 0 and self.cols > 0, "Number of rows and columns must be larger than zero"
 
             last_row_index = len(lines)
             if '' in lines: 
@@ -38,6 +38,52 @@ class GameState:
             for col_index, tile in enumerate(line):
                 assert tile in TileType.TYPES, f"Unrecognized tile {tile} at row {row_index}, column {col_index}"
             self.grid.append(line)
+
+    def __get_start_pos(self):
+        for y, row in enumerate(self.grid):
+            for x, tile in enumerate(row):
+                if tile == TileType.START:
+                    return (x, y)
+        assert False, "No starting tile 'S' found"
+
+    def __is_valid_pos(self, r, c):
+        if r < 0 or c < 0:
+            return False
+        if r >= self.rows or c >= self.cols:
+            return False
+        if self.grid[r][c] in [TileType.OBSTACLE, TileType.BOX, TileType.BANANA]:
+            return False
+        return True
+
+    def __count_reachable_tiles(self):
+        # DFS from start tile
+        stack = [self.__get_start_pos()]
+        visited = set()
+        while len(stack):
+            current_tile = stack.pop()
+            if current_tile in visited:
+                continue
+            visited.add(current_tile)
+            r, c = current_tile
+
+            deltas = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+            for dr, dc in deltas:
+                next_r, next_c = r + dr, c + dc
+                if not self.__is_valid_pos(next_r, next_c):
+                    continue
+                stack.append((next_r, next_c))
+        return len(visited)
+
+    def __count_bananas_left(self):
+        total = 0
+        for row in self.grid:
+            total += row.count(TileType.BANANA)
+        return total
+
+    def heuristic_score(self):
+        bananas_left = self.__count_bananas_left()
+        num_tiles = self.__count_reachable_tiles()
+        return bananas_left * 20 + num_tiles
 
     def __repr__(self):
         # Concatenate all rows together
