@@ -7,11 +7,9 @@ if __name__ == "__main__":
     map_file_path = sys.argv[1]
     state = GameState(map_file_path)
     solver = Solver(state)
-    solution = solver.solve()
+    finish_state, finish_distance = solver.solve(verbal=True)
     
-    finish_state, finish_distance = solution
-    
-    print("All moves to solution:")
+    print("All moves from initial state to solution:")
     for state in finish_state.history:
         print(state, end="\n\n")
     print(finish_state)

@@ -18,7 +18,7 @@ class Solver:
     def __init__(self, starting_state: GameState):
         self.starting_state = starting_state
 
-    def solve(self):
+    def solve(self, verbal: bool = False):
         # A* search algorithm
         priority_queue = [PQItem(0, 0, self.starting_state)]
         visited = set()
@@ -36,7 +36,7 @@ class Solver:
 
             for neighbor_state in state.get_possible_moves():
                 estimate = neighbor_state.heuristic_score()
-                if distance + 1 + estimate < best_score:
+                if distance + 1 + estimate < best_score and verbal:
                     best_score = distance + 1 + estimate
                     print("New best score:", best_score)
                 heappush(priority_queue, PQItem(distance + 1, estimate, neighbor_state))
