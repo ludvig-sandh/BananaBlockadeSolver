@@ -13,6 +13,7 @@ class TileType:
 class GameState:
 
     def __init__(self, from_file_path: str = None, grid: List[str] = None):
+        self.history = []
         if from_file_path is not None:
             self.__load_file(from_file_path)
             return
@@ -118,7 +119,10 @@ class GameState:
         return None
 
     def get_copy(self):
-        return GameState(grid=self.grid)
+        copied = GameState(grid=self.grid)
+        for grid in self.history:
+            copied.history.append(grid)
+        return copied
 
     def __get_tile(self, tile_rc):
         return self.grid[tile_rc[0]][tile_rc[1]]
@@ -148,7 +152,13 @@ class GameState:
         
         return True
 
+    def __add_to_history(self):
+        self.history.append(self.get_copy())
+
     def __move_box(self, from_tile, to_tile):
+        # Remember last state
+        self.__add_to_history()
+
         # Assume it's possible to move a box from from_tile to to_tile
         if self.__get_tile(from_tile) == TileType.BANANA:
             if to_tile != self.__get_goal_pos():

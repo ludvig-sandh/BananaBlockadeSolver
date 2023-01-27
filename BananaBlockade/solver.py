@@ -43,7 +43,10 @@ class Solver:
                 if distance + 1 + estimate < best_score:
                     best_score = distance + 1 + estimate
                     print("New best score:", best_score)
-                    print(neighbor_state)
                 heappush(priority_queue, PQItem(distance + 1, estimate, neighbor_state))
 
         print(finish_state)
+        print("History:")
+        for state in finish_state.history:
+            print(state, end="\n\n")
+        print("Number of moves needed for solution:", finish_distance)
