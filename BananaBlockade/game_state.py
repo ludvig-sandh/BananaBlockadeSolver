@@ -171,11 +171,23 @@ class GameState:
 
             box_r, box_c = box_tile
             dr, dc = box_r - r, box_c - c
-            box_next_tile = box_r + dr, box_c + dc
 
+            # Alternative 1: push box
+            box_next_tile = box_r + dr, box_c + dc
+            if self.__can_move_box(box_tile, box_next_tile):
+                possible_state = self.get_copy()
+                possible_state.__move_box(box_tile, box_next_tile)
+                possible.append(possible_state)
+
+            # Alternative 2: pull box
+            box_next_tile = r, c
+            stand_next_tile = r - dr, c - dc
+            if not self.__is_valid_pos(r - dr, c - dc):
+                continue
+            if not self.__is_walkable_pos(r - dr, c - dc):
+                continue
             if not self.__can_move_box(box_tile, box_next_tile):
                 continue
-
             possible_state = self.get_copy()
             possible_state.__move_box(box_tile, box_next_tile)
             possible.append(possible_state)
@@ -197,7 +209,7 @@ class GameState:
         bananas_left = self.__count_bananas_left()
         num_tiles = self.__count_reachable_tiles()
         banana_dist = self.__count_total_banana_dist()
-        return -bananas_left * 20 - banana_dist * 5 + num_tiles
+        return bananas_left * 20 + banana_dist * 5 - num_tiles
 
     def is_won(self):
         return self.__count_bananas_left() == 0
