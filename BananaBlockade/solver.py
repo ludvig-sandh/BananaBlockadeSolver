@@ -21,7 +21,6 @@ class Solver:
     def solve(self):
         # A* search algorithm
         priority_queue = [PQItem(0, 0, self.starting_state)]
-        finish_state, finish_distance = None, None
         visited = set()
         best_score = 1000000
         while len(priority_queue):
@@ -35,8 +34,7 @@ class Solver:
             if state.is_won():
                 return state, distance
 
-            neighboring_states = state.get_possible_moves()
-            for neighbor_state in neighboring_states:
+            for neighbor_state in state.get_possible_moves():
                 estimate = neighbor_state.heuristic_score()
                 if distance + 1 + estimate < best_score:
                     best_score = distance + 1 + estimate

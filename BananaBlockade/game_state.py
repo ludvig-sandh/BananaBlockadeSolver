@@ -11,7 +11,6 @@ class TileType:
     TYPES = '.#OBSG'
 
 class GameState:
-
     def __init__(self, from_file_path: str = None, grid: List[str] = None):
         self.history = []
         if from_file_path is not None:
