@@ -5,7 +5,7 @@ The goal is to push the banana crates out through the exit before the time limit
 Both banana crates and regular boxes can be pushed and dragged around, in contrast to the other obstacles which are immovable.
 Each level is configured differently - boxes, obstacles, and banana crates have different starting locations. 
 In the actual game, there are additional 2x1 movable boxes in some levels that require two players to nudge. 
-These are not implemented in my algorithm.
+These are not implemented in my algorithm but could be done without much extra code.
 
 The [A-star search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) is used to quickly find a solution for a given level.
 The heuristic function used to estimate a cost from a current game state to the solution is based on the following:
@@ -40,4 +40,25 @@ In this level file, dots '.' represent empty tiles that can be walked on.
 The first two integers specify the number of rows and columns of the level, respectively.
 
 The GameState class has a history attribute that contains a copy of each game state from start to solution.
-This way you can see the entire step of a solution.
+This way you can see the entire step of a solution. Printing all these states would show something like this:
+```
+.....#
+SB...G
+.....#
+
+.....#
+S.B..G
+.....#
+
+.....#
+S..B.G
+.....#
+
+.....#
+S...BG
+.....#
+
+.....#
+S....G
+.....#
+```
